@@ -1,9 +1,9 @@
 package lrucache
 
 import (
+	"github.com/ability-sh/abi-lib//dynamic"
 	"github.com/ability-sh/abi-micro/micro"
 	lru "github.com/hashicorp/golang-lru"
-	"gitlab.lanhuapp.com/ea/uv-rec-golang/dynamic"
 )
 
 type lrucacheConfig struct {
