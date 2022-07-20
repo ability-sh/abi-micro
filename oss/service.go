@@ -3,7 +3,7 @@ package oss
 import (
 	"fmt"
 
-	"github.com/ability-sh/abi-lib//dynamic"
+	"github.com/ability-sh/abi-lib/dynamic"
 	"github.com/ability-sh/abi-micro/micro"
 )
 
