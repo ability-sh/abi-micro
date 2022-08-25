@@ -1,10 +1,13 @@
 package oss
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/ability-sh/abi-micro/micro"
 )
+
+var ErrNoSuchKey = fmt.Errorf("no such key")
 
 type OSS interface {
 	micro.Recycle

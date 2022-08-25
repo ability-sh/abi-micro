@@ -47,6 +47,10 @@ func (s *ossService) OnInit(ctx micro.Context) error {
 		cfg := LevelDBConfig{}
 		dynamic.SetValue(&cfg, s.config)
 		s.oss, err = NewLevelDB(&cfg)
+	} else if driver == "aws" {
+		cfg := AwsOSSConfig{}
+		dynamic.SetValue(&cfg, s.config)
+		s.oss, err = NewAwsOSS(&cfg)
 	} else {
 		return fmt.Errorf("oss driver %s not supported", driver)
 	}
