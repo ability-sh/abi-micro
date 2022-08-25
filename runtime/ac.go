@@ -57,12 +57,14 @@ func getSignAcData(data map[string]string, secret string) string {
 
 func getAcContainerInfo(baseURL string, containerId string, secret string, ver int) (*acContainer, error) {
 
-	data := map[string]string{"id": containerId, "timestamp": strconv.FormatInt(time.Now().UnixNano()/time.Hour.Microseconds(), 10), "ver": strconv.Itoa(ver)}
+	data := map[string]string{"id": containerId, "timestamp": strconv.FormatInt(time.Now().UnixNano()/int64(time.Millisecond), 10), "ver": strconv.Itoa(ver)}
 	data["sign"] = getSignAcData(data, secret)
 
 	res, err := http.NewHTTPRequest("GET").
 		SetURL(fmt.Sprintf("%s/store/container/info/get.json", baseURL), data).
 		Send()
+
+	// log.Println(fmt.Sprintf("%s/store/container/info/get.json", baseURL), data)
 
 	if err != nil {
 		return nil, err
@@ -73,6 +75,8 @@ func getAcContainerInfo(baseURL string, containerId string, secret string, ver i
 	if err != nil {
 		return nil, err
 	}
+
+	// log.Println(rs)
 
 	errno := dynamic.IntValue(dynamic.Get(rs, "errno"), 0)
 
