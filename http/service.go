@@ -45,7 +45,7 @@ func (s *httpService) OnValid(ctx micro.Context) error {
 }
 
 func (s *httpService) Request(ctx micro.Context, method string) http.HTTPRequest {
-	return http.NewHTTPRequest(method).SetHeaders(map[string]string{"Connection": "keepalive", "Trace": ctx.Trace()})
+	return http.NewHTTPRequest(method).SetHeaders(map[string]string{"Trace": ctx.Trace()})
 }
 
 func (s *httpService) Recycle() {
