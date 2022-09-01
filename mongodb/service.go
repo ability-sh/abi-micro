@@ -58,7 +58,7 @@ func (s *mongodbService) OnInit(ctx micro.Context) error {
 	opt := options.Client().ApplyURI(cfg.URI)
 
 	if cfg.CA != "" {
-		tlsConfig := tls.Config{RootCAs: x509.NewCertPool()}
+		tlsConfig := &tls.Config{RootCAs: x509.NewCertPool()}
 		ok := tlsConfig.RootCAs.AppendCertsFromPEM([]byte(cfg.CA))
 		if !ok {
 			return fmt.Errorf("Failed parsing pem %s", cfg.CA)
@@ -68,7 +68,7 @@ func (s *mongodbService) OnInit(ctx micro.Context) error {
 
 	if cfg.CAFile != "" {
 
-		tlsConfig := tls.Config{}
+		tlsConfig := &tls.Config{}
 		certs, err := ioutil.ReadFile(cfg.CAFile)
 
 		if err != nil {
