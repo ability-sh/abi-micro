@@ -2,6 +2,9 @@ package mongodb
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
+	"fmt"
 
 	"github.com/ability-sh/abi-lib/dynamic"
 	"github.com/ability-sh/abi-micro/micro"
@@ -12,6 +15,7 @@ import (
 type mongodbConfig struct {
 	URI string `json:"uri"`
 	DB  string `json:"db"`
+	CA  string `json:"ca"`
 }
 
 type mongodbService struct {
@@ -49,7 +53,18 @@ func (s *mongodbService) OnInit(ctx micro.Context) error {
 
 	dynamic.SetValue(&cfg, s.config)
 
-	s.client, err = mongo.NewClient(options.Client().ApplyURI(cfg.URI))
+	opt := options.Client().ApplyURI(cfg.URI)
+
+	if cfg.CA != "" {
+		tlsConfig := tls.Config{RootCAs: x509.NewCertPool()}
+		ok := tlsConfig.RootCAs.AppendCertsFromPEM([]byte(cfg.CA))
+		if !ok {
+			return fmt.Errorf("Failed parsing pem %s", cfg.CA)
+		}
+		opt.SetTLSConfig(tlsConfig)
+	}
+
+	s.client, err = mongo.NewClient(opt)
 
 	if err != nil {
 		return err
