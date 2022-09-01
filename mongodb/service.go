@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"io/ioutil"
 
 	"github.com/ability-sh/abi-lib/dynamic"
 	"github.com/ability-sh/abi-micro/micro"
@@ -13,9 +14,10 @@ import (
 )
 
 type mongodbConfig struct {
-	URI string `json:"uri"`
-	DB  string `json:"db"`
-	CA  string `json:"ca"`
+	URI    string `json:"uri"`
+	DB     string `json:"db"`
+	CA     string `json:"ca"`
+	CAFile string `json:"ca-file"`
 }
 
 type mongodbService struct {
@@ -60,6 +62,24 @@ func (s *mongodbService) OnInit(ctx micro.Context) error {
 		ok := tlsConfig.RootCAs.AppendCertsFromPEM([]byte(cfg.CA))
 		if !ok {
 			return fmt.Errorf("Failed parsing pem %s", cfg.CA)
+		}
+		opt.SetTLSConfig(tlsConfig)
+	}
+
+	if cfg.CAFile != "" {
+
+		tlsConfig := tls.Config{}
+		certs, err := ioutil.ReadFile(cfg.CAFile)
+
+		if err != nil {
+			return err
+		}
+
+		tlsConfig.RootCAs = x509.NewCertPool()
+		ok := tlsConfig.RootCAs.AppendCertsFromPEM(certs)
+
+		if !ok {
+			return fmt.Errorf("Failed parsing pem file %s", cfg.CAFile)
 		}
 		opt.SetTLSConfig(tlsConfig)
 	}
