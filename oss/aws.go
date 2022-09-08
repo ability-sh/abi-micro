@@ -129,9 +129,32 @@ func (S *awsOSS) Put(key string, data []byte, header map[string]string) error {
 	return nil
 }
 
-func (S *awsOSS) PutSignURL(key string, expires time.Duration) (string, error) {
+func (S *awsOSS) PutSignURL(key string, expires time.Duration, header map[string]string) (string, error) {
+
 	ctx := context.Background()
-	rs, err := S.presignClient.PresignPutObject(ctx, &s3.PutObjectInput{Bucket: &S.bucket, Key: &key}, s3.WithPresignExpires(expires))
+
+	input := &s3.PutObjectInput{Bucket: &S.bucket, Key: &key}
+
+	for key, value := range header {
+		if key == "Content-Type" {
+			{
+				s := value
+				input.ContentType = &s
+			}
+		} else if key == "Content-Encoding" {
+			{
+				s := value
+				input.ContentEncoding = &s
+			}
+		} else if key == "Content-Disposition" {
+			{
+				s := value
+				input.ContentDisposition = &s
+			}
+		}
+	}
+
+	rs, err := S.presignClient.PresignPutObject(ctx, input, s3.WithPresignExpires(expires))
 	if err != nil {
 		return "", err
 	}

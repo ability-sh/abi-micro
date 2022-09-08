@@ -58,9 +58,9 @@ func (s *statOSS) Put(key string, data []byte, header map[string]string) error {
 	return err
 }
 
-func (s *statOSS) PutSignURL(key string, expires time.Duration) (string, error) {
+func (s *statOSS) PutSignURL(key string, expires time.Duration, header map[string]string) (string, error) {
 	st := s.ctx.Step("oss.PutSignURL")
-	rs, err := s.oss.PutSignURL(key, expires)
+	rs, err := s.oss.PutSignURL(key, expires, header)
 	st("")
 	return rs, err
 }

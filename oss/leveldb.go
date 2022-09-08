@@ -42,7 +42,7 @@ func (S *levelDB) Put(key string, data []byte, header map[string]string) error {
 	return S.db.Set([]byte(key), data, &db.WriteOptions{Sync: true})
 }
 
-func (S *levelDB) PutSignURL(key string, expires time.Duration) (string, error) {
+func (S *levelDB) PutSignURL(key string, expires time.Duration, header map[string]string) (string, error) {
 	return "", fmt.Errorf("PutSignURL not supported")
 }
 
