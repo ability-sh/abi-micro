@@ -103,7 +103,7 @@ func (S *aliOSS) Put(key string, data []byte, header map[string]string) error {
 	return nil
 }
 
-func (S *aliOSS) PutSignURL(key string, expires time.Duration) (string, error) {
+func (S *aliOSS) PutSignURL(key string, expires time.Duration, header map[string]string) (string, error) {
 	u, err := S.bucket.SignURL(key, Ali.HTTPPut, int64(expires/time.Second))
 	if err != nil {
 		return "", err
