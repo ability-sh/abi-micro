@@ -9,6 +9,7 @@ import (
 type SMTPService interface {
 	micro.Service
 	Send(to []string, subject string, body string, contentType string) error
+	AsyncSend(to []string, subject string, body string, contentType string) error
 }
 
 func GetSMTPService(ctx micro.Context, name string) (SMTPService, error) {
