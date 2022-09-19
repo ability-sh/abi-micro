@@ -45,6 +45,8 @@ func (s *loggerService) OnInit(ctx micro.Context) error {
 		s.logger = NewStdoutLogger()
 	} else if driver == "syslog" {
 		s.logger, err = NewSyslogLogger(s.config)
+	} else if driver == "fs" {
+		s.logger, err = NewFSLogger(s.config)
 	} else {
 		return fmt.Errorf("logger driver %s not supported", driver)
 	}
