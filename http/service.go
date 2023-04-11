@@ -9,7 +9,7 @@ import (
 	"github.com/ability-sh/abi-micro/micro"
 )
 
-var httpClient = http.NewClient()
+var httpClient = xhttp.DefaultClient
 
 type httpService struct {
 	config interface{}
