@@ -67,15 +67,11 @@ func NewReflectExecutor(s interface{}) micro.Executor {
 
 		inType := m.Type().In(1)
 
-		if inType.Kind() != reflect.Ptr || inType.Elem().Kind() != reflect.Struct {
+		if inType.Kind() != reflect.Ptr || inType.Elem().Kind() != reflect.Struct || !strings.HasSuffix(inType.Elem().Name(), "Task") {
 			continue
 		}
 
 		if !m.Type().Out(1).AssignableTo(errorType) {
-			continue
-		}
-
-		if !strings.HasPrefix(inType.Name(), "Task") {
 			continue
 		}
 
