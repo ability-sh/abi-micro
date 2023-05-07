@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"os"
 	"strconv"
@@ -77,6 +78,9 @@ func NewRuntime(config interface{}, payload micro.Payload) (micro.Runtime, error
 		}
 
 		ss[name] = s
+
+		log.Println(name, "=>", "Executor")
+
 		es[name] = NewReflectExecutor(s)
 
 		return true

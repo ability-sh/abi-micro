@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"log"
 	"reflect"
+	"strings"
 
 	"github.com/ability-sh/abi-lib/dynamic"
 	"github.com/ability-sh/abi-lib/errors"
@@ -74,13 +75,17 @@ func NewReflectExecutor(s interface{}) micro.Executor {
 			continue
 		}
 
+		if !strings.HasPrefix(inType.Name(), "Task") {
+			continue
+		}
+
 		name := t.Method(i).Name
 
 		n := getName(name, b)
 
 		rs.exec[n] = m
 
-		log.Println(n, "=>", name)
+		log.Println("Executor", "=>", n, "=>", name)
 
 	}
 
