@@ -17,6 +17,7 @@ import (
 type runtime struct {
 	config  interface{}
 	ss      map[string]micro.Service
+	es      map[string]micro.Executor
 	ch      chan int8
 	name    string
 	node    string
@@ -60,6 +61,7 @@ func NewRuntime(config interface{}, payload micro.Payload) (micro.Runtime, error
 	var err error = nil
 
 	ss := map[string]micro.Service{}
+	es := map[string]micro.Executor{}
 
 	dynamic.Each(dynamic.Get(config, "services"), func(key interface{}, item interface{}) bool {
 
@@ -75,6 +77,7 @@ func NewRuntime(config interface{}, payload micro.Payload) (micro.Runtime, error
 		}
 
 		ss[name] = s
+		es[name] = NewReflectExecutor(s)
 
 		return true
 	})
@@ -116,6 +119,7 @@ func NewRuntime(config interface{}, payload micro.Payload) (micro.Runtime, error
 	ch := make(chan int8, 32)
 
 	r := &runtime{ss: ss,
+		es:      es,
 		config:  config,
 		ch:      ch,
 		name:    name,
@@ -234,6 +238,14 @@ func (r *runtime) NewContext(path string, trace string) micro.Context {
 
 func (r *runtime) GetService(name string) (micro.Service, error) {
 	s := r.ss[name]
+	if s == nil {
+		return nil, fmt.Errorf("not found service %s", name)
+	}
+	return s, nil
+}
+
+func (r *runtime) GetExecutor(name string) (micro.Executor, error) {
+	s := r.es[name]
 	if s == nil {
 		return nil, fmt.Errorf("not found service %s", name)
 	}

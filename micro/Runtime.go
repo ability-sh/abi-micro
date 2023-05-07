@@ -37,6 +37,10 @@ type Runtime interface {
 	 **/
 	GetService(name string) (Service, error)
 	/**
+	 * 获取服务运行器
+	 **/
+	GetExecutor(name string) (Executor, error)
+	/**
 	 * 退出
 	 **/
 	Exit()
