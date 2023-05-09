@@ -114,6 +114,7 @@ func typeToSchemeType(t reflect.Type, scheme *micro.Scheme) string {
 func typeFieldToSchemeItem(name string, required bool, tf reflect.StructField, scheme *micro.Scheme) *micro.SchemeField {
 	rs := micro.SchemeField{Name: name, Required: required}
 	rs.Type = typeToSchemeType(tf.Type, scheme)
+	rs.Title = tf.Tag.Get("title")
 	return &rs
 }
 

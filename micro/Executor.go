@@ -15,6 +15,7 @@ type SchemeObject struct {
 type SchemeField struct {
 	Type     string `json:"type"`
 	Name     string `json:"name"`
+	Title    string `json:"title"`
 	Required bool   `json:"required"`
 }
 
