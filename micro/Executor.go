@@ -4,7 +4,7 @@ type IScheme interface {
 }
 
 type Executor interface {
-	Scheme() IScheme
+	Scheme(ctx Context) IScheme
 	Exec(ctx Context, name string, data interface{}) (interface{}, error)
 }
 
