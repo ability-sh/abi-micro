@@ -121,13 +121,12 @@ func typeToSchemeObject(t reflect.Type, dst *micro.SchemeObject, scheme *micro.S
 
 	switch t.Kind() {
 	case reflect.Ptr:
-		tp := t.Elem()
-		if tp.Kind() == reflect.Struct {
-			eachField(tp, func(name string, required bool, tf reflect.StructField) bool {
-				dst.Fields = append(dst.Fields, typeFieldToSchemeItem(name, required, tf, scheme))
-				return true
-			})
-		}
+		typeToSchemeObject(t.Elem(), dst, scheme)
+	case reflect.Struct:
+		eachField(t, func(name string, required bool, tf reflect.StructField) bool {
+			dst.Fields = append(dst.Fields, typeFieldToSchemeItem(name, required, tf, scheme))
+			return true
+		})
 	}
 
 }
