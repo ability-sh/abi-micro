@@ -224,6 +224,6 @@ func (r *reflectExecutor) Exec(ctx micro.Context, name string, data interface{})
 	}
 }
 
-func (r *reflectExecutor) Scheme() *micro.Scheme {
+func (r *reflectExecutor) Scheme() micro.IScheme {
 	return r.scheme
 }

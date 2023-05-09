@@ -1,7 +1,10 @@
 package micro
 
+type IScheme interface {
+}
+
 type Executor interface {
-	Scheme() *Scheme
+	Scheme() IScheme
 	Exec(ctx Context, name string, data interface{}) (interface{}, error)
 }
 
