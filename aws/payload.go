@@ -88,18 +88,17 @@ func SetAppConfig(c context.Context, p micro.Payload) (interface{}, error) {
 	}
 
 	configurationToken := rs.NextPollConfigurationToken
+	nextPollIntervalInSeconds := *rs.NextPollIntervalInSeconds
 
 	go func() {
-
-		tk := time.NewTicker(12 * time.Second)
-
-		defer tk.Stop()
 
 		for {
 			select {
 			case <-c.Done():
 				return
-			case <-tk.C:
+			default:
+
+				time.Sleep(time.Second * time.Duration(nextPollIntervalInSeconds))
 
 				rs, err := svc.GetLatestConfiguration(&appconfigdata.GetLatestConfigurationInput{ConfigurationToken: configurationToken})
 
@@ -109,11 +108,16 @@ func SetAppConfig(c context.Context, p micro.Payload) (interface{}, error) {
 				}
 
 				configurationToken = rs.NextPollConfigurationToken
+				nextPollIntervalInSeconds = *rs.NextPollIntervalInSeconds
+
+				if len(rs.Configuration) == 0 {
+					continue
+				}
 
 				v, err := getConfigObject(rs.Configuration, *rs.ContentType)
 
 				if err != nil {
-					log.Println("getConfigObject", err)
+					log.Println("getConfigObject", err, string(rs.Configuration))
 					continue
 				}
 
