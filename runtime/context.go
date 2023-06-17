@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	C "context"
+
 	"github.com/ability-sh/abi-micro/logger"
 	"github.com/ability-sh/abi-micro/micro"
 )
@@ -31,6 +33,7 @@ type context struct {
 	logger  logger.Logger
 	id      string
 	step    micro.Step
+	ctx     C.Context
 }
 
 func newContext(r *runtime, path string, trace string, payload micro.Payload) micro.Context {
@@ -44,6 +47,7 @@ func newContext(r *runtime, path string, trace string, payload micro.Payload) mi
 		ctime:   time.Now().UnixNano(),
 		payload: payload,
 		id:      micro.NewTrace(),
+		ctx:     C.Background(),
 	}
 	c.logger, _ = logger.GetLogger(c, SERVICE_LOGGER)
 	r.ch <- 1
@@ -196,4 +200,13 @@ func (c *context) AddTag(key string, value string) {
 		c.keys = append(c.keys, key)
 		c.tags[key] = &contextTag{value: value}
 	}
+}
+
+func (c *context) Ctx() C.Context {
+	return c.ctx
+}
+
+func (c *context) WithValue(key interface{}, value interface{}) C.Context {
+	c.ctx = C.WithValue(c.ctx, key, value)
+	return c.ctx
 }

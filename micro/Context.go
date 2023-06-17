@@ -31,6 +31,8 @@ type Context interface {
 	Step(step string) Step
 	BeginStep(step string)
 	EndStep(format string, v ...interface{})
+	Ctx() context.Context
+	WithValue(key interface{}, value interface{}) context.Context
 }
 
 type Key struct{}
