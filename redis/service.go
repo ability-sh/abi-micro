@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"crypto/tls"
 	"time"
 
 	"github.com/ability-sh/abi-lib/dynamic"
@@ -16,6 +17,7 @@ type redisConfig struct {
 	PoolSize     int    `json:"pool-size"`
 	MinIdleConns int    `json:"min-idle-conns"`
 	IdleTimeout  int    `json:"idle-timeout"`
+	Tls          bool   `json:"tls"`
 }
 
 type redisService struct {
@@ -52,7 +54,7 @@ func (s *redisService) OnInit(ctx micro.Context) error {
 
 	dynamic.SetValue(cfg, s.config)
 
-	s.client = R.NewClient(&R.Options{
+	opt := &R.Options{
 		Addr:         cfg.Addr,
 		Password:     cfg.Password, // no password set
 		DB:           cfg.DB,       // use default DB,
@@ -60,7 +62,13 @@ func (s *redisService) OnInit(ctx micro.Context) error {
 		Username:     cfg.UserName,
 		MinIdleConns: cfg.MinIdleConns,
 		IdleTimeout:  time.Duration(cfg.IdleTimeout) * time.Second,
-	})
+	}
+
+	if cfg.Tls {
+		opt.TLSConfig = &tls.Config{}
+	}
+
+	s.client = R.NewClient(opt)
 
 	return err
 }
