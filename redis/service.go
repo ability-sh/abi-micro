@@ -2,6 +2,7 @@ package redis
 
 import (
 	"crypto/tls"
+	"strings"
 	"time"
 
 	"github.com/ability-sh/abi-lib/dynamic"
@@ -18,12 +19,14 @@ type redisConfig struct {
 	MinIdleConns int    `json:"min-idle-conns"`
 	IdleTimeout  int    `json:"idle-timeout"`
 	Tls          bool   `json:"tls"`
+	Cluster      bool   `json:"cluster"`
 }
 
 type redisService struct {
-	config interface{}
-	name   string
-	client *R.Client
+	config        interface{}
+	name          string
+	client        *R.Client
+	clusterClient *R.ClusterClient
 }
 
 func newRedisService(name string, config interface{}) RedisService {
@@ -49,10 +52,29 @@ func (s *redisService) Config() interface{} {
 **/
 func (s *redisService) OnInit(ctx micro.Context) error {
 
-	var err error = nil
 	var cfg = &redisConfig{}
 
 	dynamic.SetValue(cfg, s.config)
+
+	if cfg.Cluster {
+
+		opt := &R.ClusterOptions{
+			Addrs:        strings.Split(cfg.Addr, ","),
+			Password:     cfg.Password, // no password set
+			PoolSize:     cfg.PoolSize,
+			Username:     cfg.UserName,
+			MinIdleConns: cfg.MinIdleConns,
+			IdleTimeout:  time.Duration(cfg.IdleTimeout) * time.Second,
+		}
+
+		if cfg.Tls {
+			opt.TLSConfig = &tls.Config{}
+		}
+
+		s.clusterClient = R.NewClusterClient(opt)
+
+		return nil
+	}
 
 	opt := &R.Options{
 		Addr:         cfg.Addr,
@@ -70,7 +92,7 @@ func (s *redisService) OnInit(ctx micro.Context) error {
 
 	s.client = R.NewClient(opt)
 
-	return err
+	return nil
 }
 
 /**
@@ -84,9 +106,17 @@ func (s *redisService) Client() *R.Client {
 	return s.client
 }
 
+func (s *redisService) ClusterClient() *R.ClusterClient {
+	return s.clusterClient
+}
+
 func (s *redisService) Recycle() {
 	if s.client != nil {
 		s.client.Close()
 		s.client = nil
+	}
+	if s.clusterClient != nil {
+		s.clusterClient.Close()
+		s.clusterClient = nil
 	}
 }
