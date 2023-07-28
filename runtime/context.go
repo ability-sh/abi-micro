@@ -3,6 +3,7 @@ package runtime
 import (
 	"bytes"
 	"fmt"
+	"strings"
 	"time"
 
 	C "context"
@@ -129,7 +130,7 @@ func (c *context) Println(v ...interface{}) {
 	c.beginLog()
 
 	for _, i := range v {
-		c.b.WriteString(fmt.Sprintf(" %s", i))
+		c.b.WriteString(strings.ReplaceAll(fmt.Sprintf(" %s", i), "\n", " "))
 	}
 
 	c.log(c.b.String())
@@ -141,7 +142,7 @@ func (c *context) Printf(format string, v ...interface{}) {
 	c.beginLog()
 
 	c.b.WriteString(" ")
-	c.b.WriteString(fmt.Sprintf(format, v...))
+	c.b.WriteString(strings.ReplaceAll(fmt.Sprintf(format, v...), "\n", " "))
 
 	c.log(c.b.String())
 
